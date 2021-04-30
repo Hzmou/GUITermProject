@@ -42,6 +42,7 @@ class App:
         ### Function list###
         functions = [
             'Resize',
+            'Rotate',
             'Canny Edge Detection',
             'Thresholding'
         ]
@@ -84,8 +85,7 @@ class App:
 
 ###############################################################################
 
-    #A nothing function for trackbar creation
-    #Can be deleted. Was only used for openCV trackbars, not tk scales
+    #A function for destroying children in the scaleFrame
     def destroyChildren(self):
         for widget in self.scaleFrame.winfo_children():
             widget.destroy()        
@@ -107,6 +107,10 @@ class App:
             self.destroyChildren()
             self.readyResize()
             self.resize(self.scaleA.get())
+        elif selection == 'Rotate':
+            self.destroyChildren()
+            self.readyRotate()
+            self.rotate(self.scaleA.get())
         else:
             pass
 
@@ -148,7 +152,7 @@ class App:
             else:
                 self.panelA.configure(image = image)
                 self.panelA.image = image
-        else: #PanelB isnt used yet because openCV currently creates all the new windows
+        else: 
             if self.panelB is None:
                 self.panelB = tk.Label(self.modFrame, image=image)
                 self.panelB.image = image
@@ -253,6 +257,28 @@ class App:
             
         ret, thresh = cv.threshold(gray,threshVal, maxVal, invert)
         self.updateImage(thresh, False)
+
+###############################################################################
+
+    #Function to ready scaleFrame for rotation
+    def readyRotate(self):
+        self.scaleA = tk.Scale(self.scaleFrame, label='Rotation', from_=0, to=360, orient='horizontal', command=self.rotate)
+        self.scaleA.grid(column=0,row=0, padx=5,pady=5)
+        self.saveBtn = tk.Button(self.scaleFrame, text='Save Photo', command=self.saveImage, width=17)
+        self.saveBtn.grid(column=0,row=1,padx=5,pady=5)
+        
+#=============================================================================
+
+    #Function to rotate image
+    def rotate(self, value):
+        img = self.originalImage
+        rotation = int(self.scaleA.get())
+        height, width = img.shape[:2]
+        matrix = cv.getRotationMatrix2D((width/2, height/2), rotation, 1)
+        rotated = cv.warpAffine(img, matrix, (width, height))
+        self.modImage = rotated
+        rotated = cv.cvtColor(rotated, cv.COLOR_BGR2RGB)
+        self.updateImage(rotated, False)
 
 ###############################################################################
 
