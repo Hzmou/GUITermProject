@@ -63,11 +63,11 @@ class App:
         func_frame = tk.LabelFrame(master, text='OpenCV Functions', padx=5,pady=5)
         func_frame.grid(column=0,row=1,sticky='nw',padx=5,pady=5)
         self.mod_frame = tk.LabelFrame(master, text='Modified Image', padx=5, pady=5)
-        self.mod_frame.grid(column=2, row=2, padx=5, pady=5)
+        self.mod_frame.grid(column=1, row=2, padx=5, pady=5)
         self.og_frame = tk.LabelFrame(master, text='Original Image', padx=5, pady=5)
-        self.og_frame.grid(column=2, row=0, padx=5, pady=5)
+        self.og_frame.grid(column=1, row=0, padx=5, pady=5)
         self.edu_frame = tk.LabelFrame(master, text='Information', padx=5, pady=5)
-        self.edu_frame.grid(column=1, row=2, padx=5, pady=5)
+        self.edu_frame.grid(column=2, row=2,sticky='nw', padx=5, pady=5)
         
         # Options Menu ###
         #optionmenu needs the * pointer in front of functions list to read them all separately
@@ -94,7 +94,7 @@ class App:
 
         # Labels ###
         self.info_pane = tk.Label(self.edu_frame, text='Information about the algorithm will appear here!',
-                                  wraplength=120, justify='left')
+                                  wraplength=360, justify='left')
         self.info_pane.pack()
 
 ###############################################################################
@@ -199,7 +199,7 @@ class App:
         self.scale_b.grid(column=0, row=1, padx=5, pady=5)
         self.save_btn = tk.Button(self.scale_frame, text='Save Photo', command=self.save_image, width=17)
         self.save_btn.grid(column=0, row=2, padx=5, pady=5)
-        self.info_pane = tk.Label(self.edu_frame, text=info.get_resize(), wraplength=120, justify='left')
+        self.info_pane = tk.Label(self.edu_frame, text=info.get_resize(), wraplength=360, justify='left')
         self.info_pane.pack()
         
 #=============================================================================
@@ -225,7 +225,7 @@ class App:
         self.scale_a = tk.Scale(self.scale_frame, label='Threshold', from_=0, to=100,
                                 orient='horizontal', command=self.canny)
         self.scale_a.grid(column=0, row=0, padx=5, pady=5)
-        self.info_pane = tk.Label(self.edu_frame, text=info.get_canny(), wraplength=120, justify='left')
+        self.info_pane = tk.Label(self.edu_frame, text=info.get_canny(), wraplength=360, justify='left')
         self.info_pane.pack()
 
 #=============================================================================
@@ -260,7 +260,7 @@ class App:
         self.cb_invert = tk.Checkbutton(self.scale_frame, text='Invert', onvalue=1, offvalue=0,
                                         variable=self.cb_invert_val, command=self.threshold)
         self.cb_invert.grid(column=0, row=2, padx=5, pady=5)
-        self.info_pane = tk.Label(self.edu_frame, text=info.get_threshold(), wraplength=120, justify='left')
+        self.info_pane = tk.Label(self.edu_frame, text=info.get_threshold(), wraplength=360, justify='left')
         self.info_pane.pack()
         
 #=============================================================================
@@ -292,7 +292,7 @@ class App:
         self.scale_a.grid(column=0, row=0, padx=5, pady=5)
         self.save_btn = tk.Button(self.scale_frame, text='Save Photo', command=self.save_image, width=17)
         self.save_btn.grid(column=0, row=1, padx=5, pady=5)
-        self.info_pane = tk.Label(self.edu_frame, text=info.get_rotate(), wraplength=120, justify='left')
+        self.info_pane = tk.Label(self.edu_frame, text=info.get_rotate(), wraplength=360, justify='left')
         self.info_pane.pack()
         
 #=============================================================================
