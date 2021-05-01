@@ -4,42 +4,49 @@ Making a basic GUI for messing around with different image functions in openCV
 Authors: Hamza and Nick
 """
 import cv2 as cv
-import numpy as np #Not used yet
-import math        #Not used yet
+import numpy as np  #Not used yet
+import math         #Not used yet
 import tkinter as tk
 import tkinter.filedialog
+import Information as info
 from PIL import Image, ImageTk
+
 
 #Class that handles the creation of the window and its components
 class App:
-    originalImage = None
-    modImage = None
+    original_image = None
+    mod_image = None
     selected = None
-    panelA = None
-    panelB = None
+    panel_a = None
+    panel_b = None
     path = None
-    scaleA = None
-    scaleB = None
-    cbInvert = None
-    cbInvertVal = None
-    saveBtn = None
-    scaleFrame = None
-    modFrame = None
-    ogFrame = None
-    
-    
-    def __init__(self, root):
+    info_pane = None
+    scale_a = None
+    scale_b = None
+    cb_invert = None
+    cb_invert_val = None
+    save_btn = None
+    scale_frame = None
+    mod_frame = None
+    og_frame = None
+    edu_frame = None
+
+    def __init__(self, master):
         #Formatting the window
-        root.geometry('{}x{}'.format(1200, 600))
+        master.geometry('{}x{}'.format(1200, 600))
         #Making the window manually  resizable
-        root.resizable(True, True)
-        root.title('OpenCV')
+        master.resizable(True, True)
+        master.title('OpenCV')
 
         #Configuring columns
-        root.columnconfigure(0, weight=1)
-        root.columnconfigure(1, weight=2)
+        master.columnconfigure(0, weight=1)
+        master.columnconfigure(1, weight=1)
+        master.columnconfigure(2,weight=2)
 
-        ### Function list###
+        #Configuring rows
+        #master.rowconfigure(2,weight=2)
+
+        # Function list ###
         functions = [
             'Resize',
             'Rotate',
@@ -50,74 +57,83 @@ class App:
         self.selected = tk.StringVar()
         self.selected.set('Select a Function')
 
-        ### Frames ###
-        self.scaleFrame = tk.LabelFrame(root, text='Function Options', padx=5,pady=5)
-        self.scaleFrame.grid(column=0,row=2,sticky='nw',padx=5,pady=5)
-        funcFrame = tk.LabelFrame(root, text='OpenCV Functions', padx=5,pady=5)
-        funcFrame.grid(column=0,row=1,sticky='nw',padx=5,pady=5)
-        self.modFrame = tk.LabelFrame(root,  text='Modified Image', padx=5,pady=5)
-        self.modFrame.grid(column=1,row=2,padx=5,pady=5)
-        self.ogFrame = tk.LabelFrame(root,  text='Original Image', padx=5,pady=5)
-        self.ogFrame.grid(column=1,row=0,padx=5,pady=5)
+        # Frames ###
+        self.scale_frame = tk.LabelFrame(master, text='Function Options', padx=5, pady=5)
+        self.scale_frame.grid(column=0, row=2, sticky='nw', padx=5, pady=5)
+        func_frame = tk.LabelFrame(master, text='OpenCV Functions', padx=5,pady=5)
+        func_frame.grid(column=0,row=1,sticky='nw',padx=5,pady=5)
+        self.mod_frame = tk.LabelFrame(master, text='Modified Image', padx=5, pady=5)
+        self.mod_frame.grid(column=2, row=2, padx=5, pady=5)
+        self.og_frame = tk.LabelFrame(master, text='Original Image', padx=5, pady=5)
+        self.og_frame.grid(column=2, row=0, padx=5, pady=5)
+        self.edu_frame = tk.LabelFrame(master, text='Information', padx=5, pady=5)
+        self.edu_frame.grid(column=1, row=2, padx=5, pady=5)
         
-        ### Options Menu ###
-        #optionmenu needs the * pointer in front of functions list to read them all seperately
-        options = tk.OptionMenu(funcFrame, self.selected, *functions)
-        options.grid(column=0, row=0,sticky='nw', padx = 5, pady = 5)
+        # Options Menu ###
+        #optionmenu needs the * pointer in front of functions list to read them all separately
+        options = tk.OptionMenu(func_frame, self.selected, *functions)
+        options.grid(column=0, row=0,sticky='nw', padx=5, pady=5)
 
-        ### Buttons ###
+        # Buttons ###
         #button to select image
-        uploadBtn = tk.Button(root, text='Select an image', command=self.selectImage, width = 17)
-        uploadBtn.grid(column=0, row=0,sticky='nw',padx=8, pady=8)
+        upload_btn = tk.Button(master, text='Select an image', command=self.select_image, width=17)
+        upload_btn.grid(column=0, row=0, sticky='nw', padx=8, pady=8)
         #Button to load menu selection
-        loadBtn = tk.Button(funcFrame, text='Load Module', command=self.loadModule, width=17)
-        loadBtn.grid(column=1,row=0,sticky='n',padx=5,pady=5)
+        load_btn = tk.Button(func_frame, text='Load Module', command=self.load_module, width=17)
+        load_btn.grid(column=1, row=0, sticky='n', padx=5, pady=5)
         
-        ### Scales ###
-        self.scaleA = tk.Scale(self.scaleFrame, label='Scale A',from_=0,to=100,orient='horizontal')
-        self.scaleA.grid(column=0,row=0,padx=5,pady=5)
-        self.scaleB = tk.Scale(self.scaleFrame, label='Scale B', from_=0, to=100, orient='horizontal')
-        self.scaleB.grid(column=0,row=1,padx=5,pady=5)
+        # Scales ###
+        self.scale_a = tk.Scale(self.scale_frame, label='Scale A', from_=0, to=100, orient='horizontal')
+        self.scale_a.grid(column=0, row=0, padx=5, pady=5)
+        self.scale_b = tk.Scale(self.scale_frame, label='Scale B', from_=0, to=100, orient='horizontal')
+        self.scale_b.grid(column=0, row=1, padx=5, pady=5)
         
-        ### Checkboxes ###
-        self.cbInvert = tk.Checkbutton(self.scaleFrame, text='Invert', onvalue=1, offvalue=0)
-        self.cbInvert.grid(column=0,row=5,padx=5,pady=5)
+        # Checkboxes ###
+        self.cb_invert = tk.Checkbutton(self.scale_frame, text='Invert', onvalue=1, offvalue=0)
+        self.cb_invert.grid(column=0, row=5, padx=5, pady=5)
+
+        # Labels ###
+        self.info_pane = tk.Label(self.edu_frame, text='Information about the algorithm will appear here!',
+                                  wraplength=120, justify='left')
+        self.info_pane.pack()
 
 ###############################################################################
 
     #A function for destroying children in the scaleFrame
-    def destroyChildren(self):
-        for widget in self.scaleFrame.winfo_children():
-            widget.destroy()        
+    def destroy_children(self):
+        for widget in self.scale_frame.winfo_children():
+            widget.destroy()
+        for widget in self.edu_frame.winfo_children():
+            widget.destroy()
 
 ###############################################################################
 
     # A Function that acts as an elif ladder for the drop-down menu
-    def loadModule(self):
+    def load_module(self):
         selection = self.selected.get()
         if selection == 'Canny Edge Detection':
-            self.destroyChildren()
-            self.readyCanny()
-            self.canny(self.scaleA.get())
+            self.destroy_children()
+            self.ready_canny()
+            self.canny(self.scale_a.get())
         elif selection == 'Thresholding':
-            self.destroyChildren()
-            self.readyThresh()
-            self.threshold(self.scaleB.get())
+            self.destroy_children()
+            self.ready_thresh()
+            self.threshold(self.scale_b.get())
         elif selection == 'Resize':
-            self.destroyChildren()
-            self.readyResize()
-            self.resize(self.scaleA.get())
+            self.destroy_children()
+            self.ready_resize()
+            self.resize(self.scale_a.get())
         elif selection == 'Rotate':
-            self.destroyChildren()
-            self.readyRotate()
-            self.rotate(self.scaleA.get())
+            self.destroy_children()
+            self.ready_rotate()
+            self.rotate(self.scale_a.get())
         else:
             pass
 
 #=============================================================================
 
     #Function that queries user for the photo to be modified
-    def selectImage(self):
+    def select_image(self):
         #choosing the  path
         self.path = tkinter.filedialog.askopenfilename()
         if len(self.path) > 0:
@@ -129,83 +145,88 @@ class App:
             scaledown_height = int(img.shape[0] * scale_percent/100)
             scaledown_width = int(img.shape[1] * scale_percent/100)
             img = cv.resize(img, (scaledown_width, scaledown_height))
-            self.originalImage = img
+            self.original_image = img
             #convert to rgb for Pillow to read
             img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
             #filling the panels with the selected image
-            self.updateImage(img, True)
+            self.update_image(img, True)
 
 #=============================================================================
 
     #A function that updates the image, whether it is original or modified
-    def updateImage(self, image, isOriginal):
+    def update_image(self, image, is_original):
         #Converting image to tkinter friendly format
         image = Image.fromarray(image)
         image = ImageTk.PhotoImage(image)
         #filling the panels with the selected image
-        if isOriginal:
-            if self.panelA is None:
-                self.panelA = tk.Label(self.ogFrame, image=image)
-                self.panelA.image = image
-                self.panelA.pack()
-                self.panelA.grid(column=1,row=0,padx=5,pady=5)
+        if is_original:
+            if self.panel_a is None:
+                self.panel_a = tk.Label(self.og_frame, image=image)
+                self.panel_a.image = image
+                self.panel_a.pack()
+                #self.panel_a.grid(column=2, row=0, padx=5, pady=5)
             else:
-                self.panelA.configure(image = image)
-                self.panelA.image = image
+                self.panel_a.configure(image=image)
+                self.panel_a.image = image
         else: 
-            if self.panelB is None:
-                self.panelB = tk.Label(self.modFrame, image=image)
-                self.panelB.image = image
-                self.panelB.pack()
-                self.modFrame.grid(column=1,row=2,padx=5,pady=5)
+            if self.panel_b is None:
+                self.panel_b = tk.Label(self.mod_frame, image=image)
+                self.panel_b.image = image
+                self.panel_b.pack()
+                #self.mod_frame.grid(column=2, row=2, padx=5, pady=5)
             else:
-                self.panelB.configure(image = image)
-                self.panelB.image = image
+                self.panel_b.configure(image=image)
+                self.panel_b.image = image
 
 #=============================================================================
 
     #Function to save a new original image
-    def saveImage(self):
-        self.originalImage = cv.cvtColor(self.modImage, cv.COLOR_BGR2RGB)
-        self.updateImage(self.originalImage, True)
+    def save_image(self):
+        self.original_image = cv.cvtColor(self.mod_image, cv.COLOR_BGR2RGB)
+        self.update_image(self.original_image, True)
 
 #=============================================================================
 
     #Function to ready the resize module
-    def readyResize(self):
-        self.scaleA = tk.Scale(self.scaleFrame, label='Height',from_=1, to=200, orient='horizontal', command=self.resize)
-        self.scaleA.set(60)
-        self.scaleA.grid(column=0,row=0,padx=5,pady=5)
-        self.scaleB = tk.Scale(self.scaleFrame, label='Width', from_=1, to=200, orient='horizontal', command=self.resize)
-        self.scaleB.set(30)
-        self.scaleB.grid(column=0,row=1,padx=5,pady=5)
-        self.saveBtn = tk.Button(self.scaleFrame, text='Save Photo', command=self.saveImage, width=17)
-        self.saveBtn.grid(column=0, row=2, padx=5,pady=5)
-        self.scaleFrame.grid(column=0,row=2,sticky='nw',padx=5,pady=5)
+    def ready_resize(self):
+        self.scale_a = tk.Scale(self.scale_frame, label='Height', from_=1, to=200,
+                                orient='horizontal', command=self.resize)
+        self.scale_a.set(100)
+        self.scale_a.grid(column=0, row=0, padx=5, pady=5)
+        self.scale_b = tk.Scale(self.scale_frame, label='Width', from_=1, to=200,
+                                orient='horizontal', command=self.resize)
+        self.scale_b.set(100)
+        self.scale_b.grid(column=0, row=1, padx=5, pady=5)
+        self.save_btn = tk.Button(self.scale_frame, text='Save Photo', command=self.save_image, width=17)
+        self.save_btn.grid(column=0, row=2, padx=5, pady=5)
+        self.info_pane = tk.Label(self.edu_frame, text=info.get_resize(), wraplength=120, justify='left')
+        self.info_pane.pack()
         
 #=============================================================================
 
     #Function that resizes the original image and saves it. 
     def resize(self, value):
         #Get scale pct
-        pctHeight = int(self.scaleA.get())
-        pctWidth = int(self.scaleB.get())
-        sdHeight = int(self.originalImage.shape[0] * pctHeight/100)
-        sdWidth = int(self.originalImage.shape[1] * pctWidth/100)
-        print(sdHeight)
-        img = cv.resize(self.originalImage, (sdWidth, sdHeight))
-        self.modImage = img
+        pct_height = int(self.scale_a.get())
+        pct_width = int(self.scale_b.get())
+        sd_height = int(self.original_image.shape[0] * pct_height / 100)
+        sd_width = int(self.original_image.shape[1] * pct_width / 100)
+        print(sd_height)
+        img = cv.resize(self.original_image, (sd_width, sd_height))
+        self.mod_image = img
         img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-        self.updateImage(img, False)
+        self.update_image(img, False)
         
 ###############################################################################
 
     #Function that readies Scale values and attributes for Canny manipulation
-    def readyCanny(self):
+    def ready_canny(self):
         #Setting new scale values and showing them
-        self.scaleA = tk.Scale(self.scaleFrame, label='Threshold', from_=0, to=100, orient='horizontal', command=self.canny)
-        self.scaleA.grid(column=0,row=0,padx=5,pady=5)
-        self.scaleFrame.grid(column=0,row=2,sticky='nw',padx=5,pady=5)
+        self.scale_a = tk.Scale(self.scale_frame, label='Threshold', from_=0, to=100,
+                                orient='horizontal', command=self.canny)
+        self.scale_a.grid(column=0, row=0, padx=5, pady=5)
+        self.info_pane = tk.Label(self.edu_frame, text=info.get_canny(), wraplength=120, justify='left')
+        self.info_pane.pack()
 
 #=============================================================================
 
@@ -213,74 +234,82 @@ class App:
     def canny(self, value):
         value = int(value)
         #Pull the original image
-        img = self.originalImage.copy()
+        img = self.original_image.copy()
         #Grayscale for canny filter
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         #blur using 3,3 kernel
         blur = cv.blur(gray, (3,3))
         #high threshold is 3 times higher than low, as suggest by Canny
         canny = cv.Canny(blur, value, value*3, 3)
-        self.updateImage(canny, False)
+        self.update_image(canny, False)
         
 ###############################################################################
 
     #Function to ready scaleFrame for Thresholding functions
-    def readyThresh(self):
+    def ready_thresh(self):
         #Setting new scale values and showing them
-        self.scaleA = tk.Scale(self.scaleFrame, label='Thresh Value', from_=0, to=255, orient='horizontal', command=self.threshold)
-        self.scaleA.set(50)
-        self.scaleA.grid(column=0,row=0,padx=5,pady=5)
-        self.scaleB = tk.Scale(self.scaleFrame, label='Max Value', from_=0,to=255, orient='horizontal', command=self.threshold)
-        self.scaleB.set(150)
-        self.scaleB.grid(column=0,row=1,padx=5,pady=5)
-        self.cbInvertVal = tk.IntVar()
-        self.cbInvert = tk.Checkbutton(self.scaleFrame, text='Invert', onvalue=1, offvalue=0, variable=self.cbInvertVal, command=self.threshold)
-        self.cbInvert.grid(column=0,row=2,padx=5,pady=5)
-        self.scaleFrame.grid(column=0,row=2,sticky='nw',padx=5,pady=5)
+        self.scale_a = tk.Scale(self.scale_frame, label='Thresh Value', from_=0, to=255,
+                                orient='horizontal', command=self.threshold)
+        self.scale_a.set(50)
+        self.scale_a.grid(column=0, row=0, padx=5, pady=5)
+        self.scale_b = tk.Scale(self.scale_frame, label='Max Value', from_=0, to=255,
+                                orient='horizontal', command=self.threshold)
+        self.scale_b.set(150)
+        self.scale_b.grid(column=0, row=1, padx=5, pady=5)
+        self.cb_invert_val = tk.IntVar()
+        self.cb_invert = tk.Checkbutton(self.scale_frame, text='Invert', onvalue=1, offvalue=0,
+                                        variable=self.cb_invert_val, command=self.threshold)
+        self.cb_invert.grid(column=0, row=2, padx=5, pady=5)
+        self.info_pane = tk.Label(self.edu_frame, text=info.get_threshold(), wraplength=120, justify='left')
+        self.info_pane.pack()
         
 #=============================================================================
 
     #Function that allows the user to Thresh the image
     def threshold(self, value):
         #Pull original image
-        img = self.originalImage
+        img = self.original_image
         # convert to grayscale
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         #Grab Scale values since passing all at once will not work well
-        threshVal = self.scaleA.get()
-        maxVal = self.scaleB.get()
-        #inversion isnt throwing the command  when the box is checked but it does work when sliding
-        if self.cbInvertVal.get() == 1:
+        thresh_val = self.scale_a.get()
+        max_val = self.scale_b.get()
+        #inversion isn't throwing the command  when the box is checked but it does work when sliding
+        if self.cb_invert_val.get() == 1:
             invert = cv.THRESH_BINARY_INV
         else:
             invert = cv.THRESH_BINARY
             
-        ret, thresh = cv.threshold(gray,threshVal, maxVal, invert)
-        self.updateImage(thresh, False)
+        ret, thresh = cv.threshold(gray,thresh_val, max_val, invert)
+        self.update_image(thresh, False)
 
 ###############################################################################
 
     #Function to ready scaleFrame for rotation
-    def readyRotate(self):
-        self.scaleA = tk.Scale(self.scaleFrame, label='Rotation', from_=0, to=360, orient='horizontal', command=self.rotate)
-        self.scaleA.grid(column=0,row=0, padx=5,pady=5)
-        self.saveBtn = tk.Button(self.scaleFrame, text='Save Photo', command=self.saveImage, width=17)
-        self.saveBtn.grid(column=0,row=1,padx=5,pady=5)
+    def ready_rotate(self):
+        self.scale_a = tk.Scale(self.scale_frame, label='Rotation', from_=0, to=360,
+                                orient='horizontal', command=self.rotate)
+        self.scale_a.grid(column=0, row=0, padx=5, pady=5)
+        self.save_btn = tk.Button(self.scale_frame, text='Save Photo', command=self.save_image, width=17)
+        self.save_btn.grid(column=0, row=1, padx=5, pady=5)
+        self.info_pane = tk.Label(self.edu_frame, text=info.get_rotate(), wraplength=120, justify='left')
+        self.info_pane.pack()
         
 #=============================================================================
 
     #Function to rotate image
     def rotate(self, value):
-        img = self.originalImage
-        rotation = int(self.scaleA.get())
+        img = self.original_image
+        rotation = int(self.scale_a.get())
         height, width = img.shape[:2]
         matrix = cv.getRotationMatrix2D((width/2, height/2), rotation, 1)
         rotated = cv.warpAffine(img, matrix, (width, height))
-        self.modImage = rotated
+        self.mod_image = rotated
         rotated = cv.cvtColor(rotated, cv.COLOR_BGR2RGB)
-        self.updateImage(rotated, False)
+        self.update_image(rotated, False)
 
 ###############################################################################
+
 
 #This is essentially the public static void Main() section of our program.
 #Initialize tkinter window
