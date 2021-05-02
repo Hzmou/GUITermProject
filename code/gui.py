@@ -164,7 +164,6 @@ class App:
                 self.panel_a = tk.Label(self.og_frame, image=image)
                 self.panel_a.image = image
                 self.panel_a.pack()
-                #self.panel_a.grid(column=2, row=0, padx=5, pady=5)
             else:
                 self.panel_a.configure(image=image)
                 self.panel_a.image = image
@@ -173,7 +172,6 @@ class App:
                 self.panel_b = tk.Label(self.mod_frame, image=image)
                 self.panel_b.image = image
                 self.panel_b.pack()
-                #self.mod_frame.grid(column=2, row=2, padx=5, pady=5)
             else:
                 self.panel_b.configure(image=image)
                 self.panel_b.image = image
@@ -182,8 +180,9 @@ class App:
 
     #Function to save a new original image
     def save_image(self):
-        self.original_image = cv.cvtColor(self.mod_image, cv.COLOR_BGR2RGB)
-        self.update_image(self.original_image, True)
+        self.original_image = self.mod_image
+        img = cv.cvtColor(self.mod_image, cv.COLOR_BGR2RGB)
+        self.update_image(img, True)
 
 #=============================================================================
 
@@ -258,7 +257,7 @@ class App:
         self.scale_b.grid(column=0, row=1, padx=5, pady=5)
         self.cb_invert_val = tk.IntVar()
         self.cb_invert = tk.Checkbutton(self.scale_frame, text='Invert', onvalue=1, offvalue=0,
-                                        variable=self.cb_invert_val, command=self.threshold)
+                                        variable=self.cb_invert_val, command=self.threshold(self.cb_invert_val.get()))
         self.cb_invert.grid(column=0, row=2, padx=5, pady=5)
         self.info_pane = tk.Label(self.edu_frame, text=info.get_threshold(), wraplength=360, justify='left')
         self.info_pane.pack()
@@ -268,7 +267,7 @@ class App:
     #Function that allows the user to Thresh the image
     def threshold(self, value):
         #Pull original image
-        img = self.original_image
+        img = self.original_image.copy()
         # convert to grayscale
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         #Grab Scale values since passing all at once will not work well
@@ -299,7 +298,7 @@ class App:
 
     #Function to rotate image
     def rotate(self, value):
-        img = self.original_image
+        img = self.original_image.copy()
         rotation = int(self.scale_a.get())
         height, width = img.shape[:2]
         matrix = cv.getRotationMatrix2D((width/2, height/2), rotation, 1)

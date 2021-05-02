@@ -15,7 +15,7 @@ rotate = 'While openCV does not have a function simply labelled \'Rotate\', ' \
          'the scale for this algorithm is 1, and the rotation is simply linked to ' \
          'your slider. \n-Step two is then running that matrix through a function that ' \
          'performs an Affine transform on the image itself. The end result ' \
-         'of all this geometry is shown to the right!'
+         'of all this geometry is shown to the left!'
 
 canny = 'This is the Canny edge detection algorithm.' \
         'It was developed in 1986 by John F. Canny.\n' \
