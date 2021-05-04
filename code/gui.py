@@ -51,7 +51,8 @@ class App:
             'Resize',
             'Rotate',
             'Canny Edge Detection',
-            'Thresholding'
+            'Thresholding',
+            'ORB algortihm'
         ]
 
         self.selected = tk.StringVar()
