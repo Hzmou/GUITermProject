@@ -52,7 +52,9 @@ class App:
             'Rotate',
             'Canny Edge Detection',
             'Thresholding',
-            'ORB algortihm'
+            'ORB algortihm',
+            "Histogram Eqaulization",
+            "GrayScaling"
         ]
 
         self.selected = tk.StringVar()
